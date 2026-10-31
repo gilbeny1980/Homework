@@ -489,10 +489,6 @@ async function loadPending(){
     if(!d.can||!d.pending.length){box.hidden=true;return}
     $('#pendingList').innerHTML=d.pending.map(p=>`<li class="item" style="--c:${p.kids&&p.kids.length?kidColor(p.kids[0]):'var(--b1)'}"><div class="avatar" style="background:${kidBg(p.kids||[])}">${esc(p.time)}</div><div class="main"><b>${esc(p.title)}${kidTags(p.kids||[])}</b><small>${fmtDate(p.date)}</small></div><button class="btn doneBtn" data-eid="${p.eid}" data-at="${p.at}">✔ בוצע</button></li>`).join('');
     box.hidden=false;
-    // parents / manager: open the full-screen alarm (with the snooze button) for the first unconfirmed task
-    if(document.visibilityState==='visible'&&$('#alarm').hidden&&$('#sheet').hidden){
-      const p=d.pending.find(x=>(+localStorage.getItem('bny-snz:'+x.eid+':'+x.at)||0)<=Date.now());
-      if(p)showAlarm({t:'❗ '+p.title+(p.kids&&p.kids.length?' ('+p.kids.join(', ')+')':''),b:fmtDate(p.date)+' בשעה '+p.time,e:p.eid,a:p.at,q:true})}
   }catch{}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadPending()});
 $('#pendingList').onclick=e=>{const b=e.target.closest('.doneBtn');if(b)confirmDone(b.dataset.eid,+b.dataset.at)};
