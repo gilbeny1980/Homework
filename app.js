@@ -125,7 +125,7 @@ $('#eventForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.tar
   sel=f.get('date');save();editEv='';clearImg();$('#eventModal').hidden=true;renderCal();checkReminders();
   if(saved&&f.get('wa'))setTimeout(()=>shareEvent(saved),300);
   e.target.wa.checked=false;
-  if(+f.get('remind')>=0&&Notification.permission==='default')askNotif()};
+  if(+f.get('remind')>=0&&window.Notification&&Notification.permission==='default')askNotif()};
 function shareEvent(ev){
   const ek=evKids(ev);const txt=`תזכורת: ${ev.title}${ek.length?' ('+ek.join(', ')+')':''} – ${fmtDate(ev.date)} בשעה ${ev.time}`;
   const q=encodeURIComponent(txt);
@@ -200,7 +200,7 @@ async function enablePush(verbose){
   const say=m=>{if(verbose)toast(m)};
   try{
     if(!('serviceWorker' in navigator)||!('PushManager' in window)){say('המכשיר/הדפדפן לא תומך בהתראות. באייפון: הוסף למסך הבית ופתח משם');return false}
-    if(Notification.permission!=='granted'){say('ההתראות לא אושרו במכשיר');return false}
+    if(!window.Notification||Notification.permission!=='granted'){say('ההתראות לא אושרו במכשיר');return false}
     if(!token){say('יש להתחבר קודם');return false}
     const kr=await fetch('/api/subscribe',{headers:hdr()});const {key}=await kr.json();
     if(!key){say('שגיאת שרת: חסר מפתח התראות');return false}
