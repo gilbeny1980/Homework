@@ -4,6 +4,7 @@ const KEY='bny-data-v1';
 let db={tasks:[],events:[],contacts:[],notes:[],fired:{}};
 try{db=Object.assign(db,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch{}
 let token=localStorage.getItem('bny-token')||'';
+function repText(e){return e.rep==='dow'?'ימים: '+(e.days||[]).map(i=>REC.DOW[i]).join(' '):REC.LABEL[e.rep]}
 let myName=localStorage.getItem('bny-name')||'';
 let myUser=localStorage.getItem('bny-user')||'';
 let FAMU=(()=>{try{return JSON.parse(localStorage.getItem('bny-famfull')||'[]')}catch{return[]}})();
@@ -387,7 +388,6 @@ function renderDow(){
 }
 $('#dowDays').onclick=e=>{const b=e.target.closest('.dtBtn');if(!b)return;const d=+b.dataset.d,main=$('#eventForm [name=time]').value;
   openTimePicker(curDT[d]||main,v=>{if(v===main)delete curDT[d];else curDT[d]=v;const cb=$('#dowDays input[value="'+d+'"]');if(cb)cb.checked=true;renderDow()})};
-const repText=e=>e.rep==='dow'?'ימים: '+(e.days||[]).map(i=>REC.DOW[i]).join(' '):REC.LABEL[e.rep];
 function openEventForm(ev){
   const f=$('#eventForm');editEv=ev?ev.id:'';clearImg();curImg=origImg=ev&&ev.img||'';
   f.querySelector('h3').textContent=ev?'עריכת אירוע':'אירוע חדש';$('#eventSave').textContent=ev?'שמור שינויים':'＋ הוסף ללוח';
