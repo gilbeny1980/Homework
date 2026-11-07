@@ -4,10 +4,15 @@ const { subGet, subUname, canConfirm, snoozeAdd, markFired, setJSON, ntfyUserByT
 module.exports = async (req, res) => {
   try {
     const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
-    if (b.topic && (b.action === 'done' || b.action === 'pause')) { // buttons on an ntfy notification
+    if (b.topic && (b.action === 'done' || b.action === 'pause' || b.action === 'skip')) { // buttons on an ntfy notification
       const un = await ntfyUserByTopic(b.topic);
       if (!un) return res.status(404).json({ error: 'unknown topic' });
       if (!b.eid || !b.at) return res.status(400).json({ error: 'missing' });
+      if (b.action === 'skip') { // "no need for a reminder": stop all repeats of this occurrence (a parent's skip also clears the confirmation)
+        await markFired(`ack:${b.eid}:${b.at}`);
+        if (await canConfirm(un, false)) await markFired(`done:${b.eid}:${b.at}`);
+        return res.status(200).json({ ok: true });
+      }
       if (!(await canConfirm(un, false))) return res.status(403).json({ error: 'only a parent can confirm' });
       if (b.action === 'done') await markFired(`done:${b.eid}:${b.at}`);
       else await setJSON(`bny:pause:${b.eid}:${b.at}`, Date.now() + Math.min(Math.max(Number(b.minutes) || 10, 1), 1440) * 60000);

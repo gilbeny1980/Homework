@@ -90,6 +90,7 @@ module.exports = async (req, res) => {
       const actions = !m.eid ? [] : (m.req && confirmer)
         ? [{ ...post({ action: 'done', topic, eid: m.eid, at: m.at }), label: '✔ בוצע' }, { ...post({ action: 'pause', topic, eid: m.eid, at: m.at, minutes: 10 }), label: '⏰ נודניק 10 דק׳' }]
         : [{ ...post({ action: 'ack', eid: m.eid, at: m.at }), label: '✔ הבנתי' }];
+      if (m.eid) actions.push({ ...post({ action: 'skip', topic, eid: m.eid, at: m.at }), label: '🚫 אין צורך בתזכורת' });
       try { await ntfyPublish({ topic, title: m.title, message: m.body, click: site + '/', actions }); nsent++; } catch (err) { fails.push('ntfy'); }
     }
     sent += nsent;

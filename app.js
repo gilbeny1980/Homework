@@ -417,6 +417,8 @@ function showAlarm(r){
 $('#alarmStop').onclick=()=>{stopRing();$('#alarm').hidden=true;const r=alarmR||{};if(!r.e)return;
   if(r.q){if(isParent())confirmDone(r.e,r.a)}
   else fetch('/api/snooze',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'ack',eid:r.e,at:r.a})}).catch(()=>{})};
+$('#alarmSkip').onclick=()=>{stopRing();$('#alarm').hidden=true;const r=alarmR||{};if(!r.e)return;
+  if(r.q&&isParent())confirmDone(r.e,r.a);else fetch('/api/snooze',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'ack',eid:r.e,at:r.a})}).catch(()=>{})};
 $('#alarmClose').onclick=()=>{stopRing();$('#alarm').hidden=true;const r=alarmR||{};if(r.q&&r.e)localStorage.setItem('bny-snz:'+r.e+':'+r.a,String(Date.now()+30*60000))};
 $('#alarmSnooze').onclick=async()=>{stopRing();$('#alarm').hidden=true;const r=alarmR||{};if(r.q&&r.e)localStorage.setItem('bny-snz:'+r.e+':'+r.a,String(Date.now()+10*60000));await snoozeFor(r,10);if(!r.e)setTimeout(()=>showAlarm(r),10*60000)};
 $('#alarm').addEventListener('pointerdown',()=>{try{ctx()}catch{};$('#alarmHint').style.visibility='hidden'},{passive:true});
